@@ -22,13 +22,17 @@ export default function ProfileContent({ activeTab, userId }) {
     setProfile(profile);
   }
   async function fetchPosts(userId) {
-    const { data } = await supabase.from("posts").select().eq("author", userId);
+    const { data } = await supabase
+      .from("posts")
+      .select()
+      .is("parent", null)
+      .eq("author", userId);
     return data;
   }
 
   async function fetchProfile(userId) {
     const { data } = await supabase.from("profiles").select().eq("id", userId);
-    return data[0];
+    return data?.[0];
   }
   return (
     <div>

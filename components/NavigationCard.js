@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/component";
 
 export default function NavigationCard({ flag }) {
   const router = useRouter();
+  console.log(router);
   const { asPath: pathname } = router;
   const activeClasses =
     "text-sm md:text-md flex gap-1 md:gap-3 py-3 bg-socialBlue text-white md:-mx-8 md:px-8 px-6 rounded-md shadow-md shadow-gray-300";

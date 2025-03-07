@@ -23,7 +23,7 @@ export default function Home() {
         return supabase
           .from("profiles")
           .select()
-          .eq("id", obj.data.session.user.id);
+          .eq("id", obj.data.session?.user?.id);
       })
       .then((result) => setProfile(result.data[0]));
     fetchPosts();
@@ -33,6 +33,7 @@ export default function Home() {
     supabase
       .from("posts")
       .select("id,content,created_at,photos, profiles(id,avatar,name)")
+      .is("parent", null)
       .order("created_at", { ascending: false })
       .then((result) => setPosts(result.data));
   }

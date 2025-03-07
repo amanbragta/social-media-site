@@ -14,13 +14,30 @@ export default function PostCard({
   profiles: authorProfile,
 }) {
   const [dropDownOpen, setDropDownOpen] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [comments, setComments] = useState([]);
   const supabase = createClient();
   const [likes, setLikes] = useState([]);
+  const [isSaved, setIsSaved] = useState(false);
   const wrRef = useRef(null);
   const profile = useContext(UserContext);
   useEffect(() => {
     fetchLikes();
+    fetchComments();
+    fetchSaved();
   }, []);
+
+  function fetchSaved() {
+    supabase
+      .from("saved_posts")
+      .select()
+      .eq("post_id", id)
+      .then((result) => {
+        if (result?.data?.length > 0) setIsSaved(true);
+        else setIsSaved(false);
+      });
+  }
+
   function fetchLikes() {
     supabase
       .from("likes")
@@ -28,7 +45,16 @@ export default function PostCard({
       .eq("post_id", id)
       .then((result) => setLikes(result.data));
   }
+
+  function fetchComments() {
+    supabase
+      .from("posts")
+      .select("*,profiles(*)")
+      .eq("parent", id)
+      .then((result) => setComments(result.data));
+  }
   const isLikedByMe = !!likes.find((like) => like.user_id === profile.id);
+
   function toggleLike() {
     if (isLikedByMe) {
       supabase
@@ -46,6 +72,45 @@ export default function PostCard({
         user_id: profile.id,
       })
       .then(() => fetchLikes());
+  }
+  function toggleSaved() {
+    if (isSaved) {
+      supabase
+        .from("saved_posts")
+        .delete()
+        .eq("post_id", id)
+        .eq("user_id", profile.id)
+        .then((result) => {
+          setDropDownOpen(false);
+          setIsSaved(false);
+        });
+      return;
+    }
+    supabase
+      .from("saved_posts")
+      .insert({
+        post_id: id,
+        user_id: profile.id,
+      })
+      .then((result) => {
+        setDropDownOpen(false);
+        setIsSaved(true);
+      });
+  }
+
+  function postComment(e) {
+    e.preventDefault();
+    supabase
+      .from("posts")
+      .insert({
+        content: commentText,
+        author: profile.id,
+        parent: id,
+      })
+      .then(() => {
+        setCommentText("");
+        fetchComments();
+      });
   }
   const classesForMenu =
     "flex gap-3 py-1 my-2 hover:bg-socialBlue hover:text-white px-2 rounded-md transition-all hover:scale-110";
@@ -91,24 +156,46 @@ export default function PostCard({
           </div>
           <div className="relative" ref={wrRef}>
             {dropDownOpen && (
-              <div className="absolute -right-6 bg-white shadow-md shadow-gray-300 p-3 rounded-sm border border-gray-100 w-52">
-                <a href="" className={classesForMenu}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-                    />
-                  </svg>
-                  Save post
-                </a>
+              <div className="absolute -right-6 bg-white shadow-md shadow-gray-300 p-3 rounded-sm border border-gray-100 w-52 z-10">
+                <button href="" className="w-full -my-2" onClick={toggleSaved}>
+                  <span className={classesForMenu}>
+                    {isSaved && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="m3 3 1.664 1.664M21 21l-1.5-1.5m-5.485-1.242L12 17.25 4.5 21V8.742m.164-4.078a2.15 2.15 0 0 1 1.743-1.342 48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185V19.5M4.664 4.664 19.5 19.5"
+                        />
+                      </svg>
+                    )}
+                    {!isSaved && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+                        />
+                      </svg>
+                    )}
+
+                    {isSaved ? "Unsave" : "Save post"}
+                  </span>
+                </button>
+
                 <a href="" className={classesForMenu}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -216,7 +303,7 @@ export default function PostCard({
               d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
             />
           </svg>
-          11
+          {comments?.length}
         </button>
         <button className="flex gap-2 items-center">
           <svg
@@ -241,10 +328,15 @@ export default function PostCard({
           <Avatar url={profile?.avatar} />
         </div>
         <div className="grow border rounded-full relative">
-          <textarea
-            className="block w-full py-3 px-4 h-12 overflow-hidden rounded-full resize-none"
-            placeholder="Leave a comment"
-          />
+          <form onSubmit={postComment}>
+            <input
+              className="block w-full py-3 px-4 h-12 overflow-hidden rounded-full resize-none"
+              placeholder="Leave a comment"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+            />
+          </form>
+
           <button className="absolute right-3 top-3 text-gray-400">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -263,6 +355,29 @@ export default function PostCard({
           </button>
         </div>
       </div>
+      {comments.length > 0 &&
+        comments.map((comment) => (
+          <div key={comment.id} className="flex items-center gap-2 mt-2">
+            <Avatar url={comment.profiles.avatar} />
+            <div className="bg-gray-200 py-2 px-4 rounded-3xl">
+              <div className="">
+                <Link href={"/profile/" + comment.profiles.id}>
+                  <span className="hover:underline font-semibold mr-2">
+                    {comment.profiles.name}
+                  </span>
+                </Link>
+                <span className="text-xs text-gray-400">
+                  <ReactTimeAgo
+                    timeStyle={"twitter"}
+                    date={new Date(comment.created_at).getTime()}
+                  />
+                </span>
+              </div>
+
+              <p className="text-sm leading-4">{comment.content}</p>
+            </div>
+          </div>
+        ))}
     </Card>
   );
 }

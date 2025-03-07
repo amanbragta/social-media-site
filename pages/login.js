@@ -14,7 +14,6 @@ export default function LoginPage() {
         <h1 className="text-6xl text-gray-300 mb-4 text-center">Login</h1>
         <Card noPadding={true}>
           <button
-            href=""
             onClick={loginWithGoogle}
             className="flex w-full p-4 gap-4 justify-center items-center hover:bg-socialBlue hover:text-white hover:scale-105 transition-all"
           >
