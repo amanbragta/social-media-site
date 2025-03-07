@@ -1,8 +1,47 @@
+import { createClient } from "@/utils/supabase/component";
+import { useState } from "react";
+import PreLoader from "./PreLoader";
 export default function Avatar({ size, url, editable, fetchInfo }) {
+  const supabase = createClient();
+  const [isUploading, setIsUploading] = useState(false);
   let dimentions = "w-12 h-12";
   if (size === "lg") {
     dimentions = "w-24 h-24 md:w-36 md:h-36";
   }
+  async function uploadAvatar(e) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setIsUploading(true);
+      const newName = Date.now() + file.name;
+      const { data, error } = await supabase.storage
+        .from("avatars")
+        .upload(newName, file);
+      if (error) throw result.error;
+      else {
+        supabase.auth.getSession().then((result) => {
+          const currSession = result.data.session.user.id;
+          const url =
+            process.env.NEXT_PUBLIC_SUPABASE_URL +
+            `/storage/v1/object/public/avatars/` +
+            data.path;
+          supabase
+            .from("profiles")
+            .update({
+              avatar: url,
+            })
+            .eq("id", currSession)
+            .then((result) => {
+              if (result.error) throw result.error;
+              else {
+                setIsUploading(false);
+                fetchInfo();
+              }
+            });
+        });
+      }
+    }
+  }
+
   return (
     <div className="relative">
       <img
@@ -10,8 +49,14 @@ export default function Avatar({ size, url, editable, fetchInfo }) {
         src={url}
         alt=""
       />
+      {isUploading && (
+        <div className="absolute inset-0 bg-white opacity-50 rounded-full flex items-center justify-center">
+          <PreLoader />
+        </div>
+      )}
       {editable && (
-        <div className="absolute bottom-0 right-0 bg-white shadow-md shadow-gray-500 p-2 rounded-full cursor-pointer">
+        <label className="absolute bottom-0 right-0 bg-white shadow-md shadow-gray-500 p-2 rounded-full cursor-pointer">
+          <input className="hidden" type="file" onChange={uploadAvatar} />
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -31,7 +76,7 @@ export default function Avatar({ size, url, editable, fetchInfo }) {
               d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
             />
           </svg>
-        </div>
+        </label>
       )}
     </div>
   );

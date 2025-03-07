@@ -1,19 +1,52 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Avatar from "./Avatar";
 import Card from "./Card";
 import Link from "next/link";
 import ReactTimeAgo from "react-time-ago";
 import { UserContext } from "@/contexts/UserContext";
+import { createClient } from "@/utils/supabase/component";
 
 export default function PostCard({
+  id,
   content,
   created_at,
   photos,
   profiles: authorProfile,
 }) {
   const [dropDownOpen, setDropDownOpen] = useState(false);
+  const supabase = createClient();
+  const [likes, setLikes] = useState([]);
   const wrRef = useRef(null);
   const profile = useContext(UserContext);
+  useEffect(() => {
+    fetchLikes();
+  }, []);
+  function fetchLikes() {
+    supabase
+      .from("likes")
+      .select()
+      .eq("post_id", id)
+      .then((result) => setLikes(result.data));
+  }
+  const isLikedByMe = !!likes.find((like) => like.user_id === profile.id);
+  function toggleLike() {
+    if (isLikedByMe) {
+      supabase
+        .from("likes")
+        .delete()
+        .eq("post_id", id)
+        .eq("user_id", profile.id)
+        .then(() => fetchLikes());
+      return;
+    }
+    supabase
+      .from("likes")
+      .insert({
+        post_id: id,
+        user_id: profile.id,
+      })
+      .then(() => fetchLikes());
+  }
   const classesForMenu =
     "flex gap-3 py-1 my-2 hover:bg-socialBlue hover:text-white px-2 rounded-md transition-all hover:scale-110";
   return (
@@ -26,7 +59,7 @@ export default function PostCard({
         </div>
         <div className="grow">
           <p>
-            <Link href={"/profile/" + authorProfile.id}>
+            <Link href={"/profile/" + authorProfile?.id}>
               <span className="font-semibold mr-1 hover:underline">
                 {authorProfile?.name}
               </span>
@@ -34,7 +67,7 @@ export default function PostCard({
             shared a post.
           </p>
           <p className="text-gray-500 text-sm">
-            <ReactTimeAgo date={created_at} />
+            <ReactTimeAgo date={new Date(created_at).getTime()} />
           </p>
         </div>
         <div>
@@ -151,14 +184,14 @@ export default function PostCard({
         </div> */}
       </div>
       <div className="mt-5 flex gap-8">
-        <button className="flex gap-2 items-center">
+        <button className="flex gap-2 items-center" onClick={toggleLike}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="size-6"
+            className={"size-6 " + (isLikedByMe ? "fill-red-500" : "")}
           >
             <path
               strokeLinecap="round"
@@ -166,7 +199,7 @@ export default function PostCard({
               d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
             />
           </svg>
-          16
+          {likes?.length}
         </button>
         <button className="flex gap-2 items-center">
           <svg
