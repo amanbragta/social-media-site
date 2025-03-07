@@ -9,13 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.49.1",
+    "@tailwindcss/postcss": "^4.0.9",
+    "javascript-time-ago": "^2.5.11",
+    "next": "15.2.1",
+    "postcss": "^8.5.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.2.1"
+    "react-spinners": "^0.15.0",
+    "react-time-ago": "^7.3.3",
+    "tailwindcss": "^4.0.9"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3",
     "eslint": "^9",
-    "eslint-config-next": "15.2.1",
-    "@eslint/eslintrc": "^3"
+    "eslint-config-next": "15.2.1"
   }
 }
