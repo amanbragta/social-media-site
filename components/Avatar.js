@@ -1,7 +1,13 @@
 import { createClient } from "@/utils/supabase/component";
 import { useState } from "react";
 import PreLoader from "./PreLoader";
-export default function Avatar({ size, url, editable, fetchInfo }) {
+export default function Avatar({
+  size,
+  url,
+  editable,
+  fetchInfo,
+  avatarStatus,
+}) {
   const supabase = createClient();
   const [isUploading, setIsUploading] = useState(false);
   let dimentions = "w-12 h-12";
@@ -35,6 +41,7 @@ export default function Avatar({ size, url, editable, fetchInfo }) {
               else {
                 setIsUploading(false);
                 fetchInfo();
+                avatarStatus(true);
               }
             });
         });

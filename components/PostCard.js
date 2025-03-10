@@ -12,6 +12,7 @@ export default function PostCard({
   created_at,
   photos,
   profiles: authorProfile,
+  gotRemoved,
 }) {
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
@@ -75,27 +76,32 @@ export default function PostCard({
   }
   function toggleSaved() {
     if (isSaved) {
+      supabase.auth.getSession().then((result) => {
+        const sessionId = result.data.session.user.id;
+        supabase
+          .from("saved_posts")
+          .delete()
+          .eq("post_id", id)
+          .eq("user_id", sessionId)
+          .then(() => {
+            setDropDownOpen(false);
+            setIsSaved(false);
+            gotRemoved(true);
+          });
+      });
+    }
+    if (!isSaved) {
       supabase
         .from("saved_posts")
-        .delete()
-        .eq("post_id", id)
-        .eq("user_id", profile.id)
-        .then((result) => {
+        .insert({
+          post_id: id,
+          user_id: profile.id,
+        })
+        .then(() => {
           setDropDownOpen(false);
-          setIsSaved(false);
+          setIsSaved(true);
         });
-      return;
     }
-    supabase
-      .from("saved_posts")
-      .insert({
-        post_id: id,
-        user_id: profile.id,
-      })
-      .then((result) => {
-        setDropDownOpen(false);
-        setIsSaved(true);
-      });
   }
 
   function postComment(e) {
@@ -118,7 +124,7 @@ export default function PostCard({
     <Card>
       <div className="flex gap-3">
         <div>
-          <Link href={"/profile"}>
+          <Link href={"/profile/" + authorProfile?.id}>
             <Avatar url={authorProfile?.avatar} />
           </Link>
         </div>
@@ -157,7 +163,7 @@ export default function PostCard({
           <div className="relative" ref={wrRef}>
             {dropDownOpen && (
               <div className="absolute -right-6 bg-white shadow-md shadow-gray-300 p-3 rounded-sm border border-gray-100 w-52 z-10">
-                <button href="" className="w-full -my-2" onClick={toggleSaved}>
+                <button className="w-full -my-2" onClick={toggleSaved}>
                   <span className={classesForMenu}>
                     {isSaved && (
                       <svg

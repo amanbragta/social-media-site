@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 export default function SavedPosts() {
   const supabase = createClient();
   const [saved, setSaved] = useState([]);
+  const [gotRemoved, setGotRemoved] = useState(false);
   useEffect(() => {
     supabase.auth.getSession().then((result) => {
       const session = result.data.session.user.id;
@@ -22,14 +23,14 @@ export default function SavedPosts() {
             .then((result) => setSaved(result.data));
         });
     });
-  }, []);
+  }, [gotRemoved]);
   return (
     <Layout>
       <h1 className="text-6xl text-gray-300 mb-4">Saved posts</h1>
       {saved?.length > 0 &&
         saved.map((save) => (
           <div key={save.id}>
-            <PostCard {...save} />
+            <PostCard {...save} gotRemoved={setGotRemoved} />
           </div>
         ))}
     </Layout>

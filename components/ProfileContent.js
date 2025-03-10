@@ -4,17 +4,26 @@ import { createClient } from "@/utils/supabase/component";
 import PostCard from "./PostCard";
 import { useEffect, useState } from "react";
 
-export default function ProfileContent({ activeTab, userId }) {
+export default function ProfileContent({ activeTab, userId, avatarStatus }) {
   const supabase = createClient();
   const [posts, setPosts] = useState([]);
   const [profile, setProfile] = useState([]);
+  const [about, setAbout] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
     if (activeTab === "posts") {
       loadPosts().then(() => {});
     }
-  }, [userId]);
+    if (activeTab === "about") {
+      supabase
+        .from("profiles")
+        .select()
+        .eq("id", userId)
+        .then((result) => setProfile(result.data?.[0]));
+    }
+  }, [userId, avatarStatus, activeTab]);
   async function loadPosts() {
     const posts = await fetchPosts(userId);
     const profile = await fetchProfile(userId);
@@ -28,6 +37,19 @@ export default function ProfileContent({ activeTab, userId }) {
       .is("parent", null)
       .eq("author", userId);
     return data;
+  }
+
+  function saveAbout() {
+    supabase
+      .from("profiles")
+      .update({
+        about,
+      })
+      .eq("id", profile?.id)
+      .then(() => {
+        setProfile({ ...profile, about });
+        setIsEditMode(false);
+      });
   }
 
   async function fetchProfile(userId) {
@@ -46,16 +68,43 @@ export default function ProfileContent({ activeTab, userId }) {
       {activeTab === "about" && (
         <Card>
           <div>
-            <h2 className="text-3xl mb-2">About me</h2>
-            <p className="text-sm">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
+            <div className="flex justify-between">
+              <h2 className="text-3xl mb-2">About me</h2>
+              <div>
+                {!isEditMode && (
+                  <button
+                    onClick={() => setIsEditMode(true)}
+                    className="bg-white shadow-sm shadow-gray-500 rounded-md px-3 py-1 cursor-pointer"
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
+            </div>
+            {isEditMode && (
+              <div>
+                <textarea
+                  value={about}
+                  onChange={(e) => setAbout(e.target.value)}
+                  className="w-full p-3 h-32 resize-none border border-gray-300 rounded-md"
+                />
+                <div className="flex justify-end mt-2">
+                  <button
+                    onClick={saveAbout}
+                    className="bg-white shadow-sm shadow-gray-500 rounded-md px-3 py-1 mr-2 cursor-pointer"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setIsEditMode(false)}
+                    className="bg-white shadow-sm shadow-gray-500 rounded-md px-3 py-1 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+            {!isEditMode && <p className="text-sm">{profile.about}</p>}
           </div>
         </Card>
       )}

@@ -2,11 +2,12 @@ import { useRouter } from "next/router";
 import Card from "./Card";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/component";
+import { useEffect, useState } from "react";
 
-export default function NavigationCard({ flag }) {
+export default function NavigationCard({ flag, profile }) {
   const router = useRouter();
-  console.log(router);
   const { asPath: pathname } = router;
+  const [session, setSession] = useState();
   const activeClasses =
     "text-sm md:text-md flex gap-1 md:gap-3 py-3 bg-socialBlue text-white md:-mx-8 md:px-8 px-6 rounded-md shadow-md shadow-gray-300";
   const nonActiveClasses =
@@ -16,6 +17,11 @@ export default function NavigationCard({ flag }) {
     flag(false);
     await supabase.auth.signOut();
   }
+  useEffect(() => {
+    supabase.auth
+      .getSession()
+      .then((result) => setSession(result.data.session.user.id));
+  }, []);
   return (
     <Card noPadding={true}>
       <div className="px-6 py-2 flex md:block justify-between shadow-md shadow-gray-500 md:shadow-none">
@@ -85,9 +91,9 @@ export default function NavigationCard({ flag }) {
           <span className="hidden md:block">Saved posts</span>
         </Link>
         <Link
-          href="/notifications"
+          href={"/profile/" + session}
           className={
-            pathname === "/notifications" ? activeClasses : nonActiveClasses
+            pathname.includes("profile") ? activeClasses : nonActiveClasses
           }
         >
           <svg
@@ -101,10 +107,11 @@ export default function NavigationCard({ flag }) {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
+              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
             />
           </svg>
-          <span className="hidden md:block">Notifications</span>
+
+          <span className="hidden md:block">Profile</span>
         </Link>
         <button onClick={logout} className="w-full -my-2">
           <span className={nonActiveClasses}>

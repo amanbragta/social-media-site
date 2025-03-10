@@ -41,7 +41,7 @@ export default function Home() {
   if (!flag) return <LoginPage />;
 
   return (
-    <Layout flag={setFlag}>
+    <Layout flag={setFlag} profile={profile}>
       <UserContext.Provider value={profile}>
         <PostFormCard onPost={fetchPosts} />
         {posts.map((post) => (

@@ -22,6 +22,7 @@ export default function ProfilePage() {
   const userId = router.query.id;
   const active = router?.query?.tabs?.[0] || "posts";
   const [isMyUser, setIsMyUser] = useState(false);
+  const [avatarChanged, setAvatarChanged] = useState(false);
   useEffect(() => {
     if (!userId) return;
     fetchUser();
@@ -75,6 +76,7 @@ export default function ProfilePage() {
                   size="lg"
                   editable={isMyUser}
                   fetchInfo={fetchUser}
+                  avatarStatus={setAvatarChanged}
                 />
               )}
             </div>
@@ -157,7 +159,11 @@ export default function ProfilePage() {
             </div>
           </div>
         </Card>
-        <ProfileContent activeTab={active} userId={userId} />
+        <ProfileContent
+          activeTab={active}
+          userId={userId}
+          avatarStatus={avatarChanged}
+        />
       </UserContextProvider>
     </Layout>
   );
