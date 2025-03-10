@@ -13,6 +13,7 @@ export default function PostCard({
   photos,
   profiles: authorProfile,
   gotRemoved,
+  profile,
 }) {
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
@@ -21,7 +22,7 @@ export default function PostCard({
   const [likes, setLikes] = useState([]);
   const [isSaved, setIsSaved] = useState(false);
   const wrRef = useRef(null);
-  const profile = useContext(UserContext);
+  // const { profile } = useContext(UserContext);
   useEffect(() => {
     fetchLikes();
     fetchComments();
@@ -54,7 +55,7 @@ export default function PostCard({
       .eq("parent", id)
       .then((result) => setComments(result.data));
   }
-  const isLikedByMe = !!likes.find((like) => like.user_id === profile.id);
+  const isLikedByMe = !!likes.find((like) => like.user_id === profile?.id);
 
   function toggleLike() {
     if (isLikedByMe) {
@@ -379,7 +380,6 @@ export default function PostCard({
                   />
                 </span>
               </div>
-
               <p className="text-sm leading-4">{comment.content}</p>
             </div>
           </div>

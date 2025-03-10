@@ -76,6 +76,7 @@ export default function ProfilePage() {
                   size="lg"
                   editable={isMyUser}
                   fetchInfo={fetchUser}
+                  avatarVal={avatarChanged}
                   avatarStatus={setAvatarChanged}
                 />
               )}

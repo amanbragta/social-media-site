@@ -5,7 +5,7 @@ export const UserContext = createContext({});
 
 export function UserContextProvider({ children }) {
   const supabase = createClient();
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState({});
   useEffect(() => {
     supabase.auth
       .getSession()

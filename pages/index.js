@@ -45,7 +45,7 @@ export default function Home() {
       <UserContext.Provider value={profile}>
         <PostFormCard onPost={fetchPosts} />
         {posts.map((post) => (
-          <PostCard key={post.id} {...post} />
+          <PostCard key={post.id} {...post} profile={profile} />
         ))}
       </UserContext.Provider>
     </Layout>

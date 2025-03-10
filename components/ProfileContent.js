@@ -13,17 +13,8 @@ export default function ProfileContent({ activeTab, userId, avatarStatus }) {
 
   useEffect(() => {
     if (!userId) return;
-    if (activeTab === "posts") {
-      loadPosts().then(() => {});
-    }
-    if (activeTab === "about") {
-      supabase
-        .from("profiles")
-        .select()
-        .eq("id", userId)
-        .then((result) => setProfile(result.data?.[0]));
-    }
-  }, [userId, avatarStatus, activeTab]);
+    loadPosts().then(() => {});
+  }, [userId, avatarStatus]);
   async function loadPosts() {
     const posts = await fetchPosts(userId);
     const profile = await fetchProfile(userId);
@@ -61,7 +52,12 @@ export default function ProfileContent({ activeTab, userId, avatarStatus }) {
       {activeTab === "posts" && (
         <div>
           {posts.map((post) => (
-            <PostCard key={post.created_at} {...post} profiles={profile} />
+            <PostCard
+              key={post.created_at}
+              {...post}
+              profiles={profile}
+              profile={profile}
+            />
           ))}
         </div>
       )}
@@ -139,30 +135,16 @@ export default function ProfileContent({ activeTab, userId, avatarStatus }) {
       {activeTab === "photos" && (
         <Card>
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="flex items-center rounded-md overflow-hidden h-48 shadow-md">
-              <img
-                src="https://images.unsplash.com/photo-1546213290-e1b492ab3eee?q=80&w=2874&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt=""
-              />
-            </div>
-            <div className="flex items-center rounded-md overflow-hidden h-48 shadow-md">
-              <img
-                src="https://images.unsplash.com/photo-1740978845296-ad92aa72c017?q=80&w=2952&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt=""
-              />
-            </div>
-            <div className="flex items-center rounded-md overflow-hidden h-48 shadow-md">
-              <img
-                src="https://images.unsplash.com/photo-1740767581333-0e83e94c7f6e?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt=""
-              />
-            </div>
-            <div className="flex items-center rounded-md overflow-hidden h-48 shadow-md">
-              <img
-                src="https://images.unsplash.com/photo-1740905546458-3df27533ddc7?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt=""
-              />
-            </div>
+            {posts.map((post) => {
+              return post.photos.map((pic) => (
+                <div
+                  key={pic}
+                  className="flex items-center rounded-md overflow-hidden h-48 shadow-md"
+                >
+                  <img src={pic} alt="" />
+                </div>
+              ));
+            })}
           </div>
         </Card>
       )}

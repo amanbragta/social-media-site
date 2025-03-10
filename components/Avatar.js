@@ -7,6 +7,7 @@ export default function Avatar({
   editable,
   fetchInfo,
   avatarStatus,
+  avatarVal,
 }) {
   const supabase = createClient();
   const [isUploading, setIsUploading] = useState(false);
@@ -41,7 +42,7 @@ export default function Avatar({
               else {
                 setIsUploading(false);
                 fetchInfo();
-                avatarStatus(true);
+                avatarStatus(!avatarVal);
               }
             });
         });
