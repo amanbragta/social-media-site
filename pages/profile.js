@@ -139,7 +139,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="p-4 pb-0 pt-0 md:pt-4">
-              <div className="ml-24 md:ml-40 flex justify-between">
+              <div className="ml-28 md:ml-40 mt-2 md:mt-0 flex justify-between">
                 {isEditMode && (
                   <div className="w-50">
                     <input
@@ -160,7 +160,9 @@ export default function ProfilePage() {
                 )}
                 {!isEditMode && (
                   <div>
-                    <h1 className="text-3xl font-bold">{profile?.name}</h1>
+                    <h1 className="md:text-3xl text-2xl font-bold">
+                      {profile?.name}
+                    </h1>
                     <div className="text-gray-500 leading-4">
                       {profile?.place || "internet"}
                     </div>
@@ -221,20 +223,22 @@ export default function ProfilePage() {
                       }}
                       className="flex gap-1 items-center bg-white shadow-sm shadow-gray-500 rounded-md py-1 px-2"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="size-6"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                        />
-                      </svg>
+                      <span className="hidden sm:block">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="size-6"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                          />
+                        </svg>
+                      </span>
                       Edit profile
                     </button>
                   )}
