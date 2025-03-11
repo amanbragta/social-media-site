@@ -25,7 +25,7 @@ export default function NavigationCard({ flag, profile }) {
   }, []);
   return (
     <Card noPadding={true}>
-      <div className="px-6 py-2 flex md:block justify-between shadow-md shadow-gray-500 md:shadow-none">
+      <div className="px-6 py-2 flex justify-between md:block shadow-md shadow-gray-500 md:shadow-none">
         <h2 className="text-gray-400 mb-3 hidden md:block text-center">
           Navigation
         </h2>
@@ -117,25 +117,27 @@ export default function NavigationCard({ flag, profile }) {
           <span className="hidden md:block">Profile</span>
         </Link>
 
-        <button onClick={logout} className="w-full -mt-2">
-          <span className={nonActiveClasses}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
-              />
-            </svg>
-            <span className="hidden md:block">Logout</span>
-          </span>
-        </button>
+        <div className={`mt-2 ${nonActiveClasses}`}>
+          <button onClick={logout}>
+            <span className="flex gap-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+                />
+              </svg>
+              <span className="hidden md:block">Logout</span>
+            </span>
+          </button>
+        </div>
       </div>
     </Card>
   );

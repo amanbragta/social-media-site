@@ -163,7 +163,7 @@ export default function ProfilePage() {
                       {profile?.name}
                     </h1>
                     <div className="text-gray-500 leading-4">
-                      {profile?.place || "internet"}
+                      {profile?.place || "Edit place"}
                     </div>
                   </div>
                 )}
