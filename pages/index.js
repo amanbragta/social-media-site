@@ -36,7 +36,7 @@ export default function Home() {
       .then((result) => setPosts(result.data));
   }
 
-  if (!flag) return <LoginPage />;
+  if (!flag) return <LoginPage flag={setFlag} />;
 
   return (
     <Layout flag={setFlag} profile={profile}>
