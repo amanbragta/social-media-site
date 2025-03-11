@@ -6,21 +6,20 @@ import { useEffect, useState } from "react";
 
 export default function NavigationCard({ flag, profile }) {
   const router = useRouter();
-  const { asPath: pathname } = router;
+  const { pathname } = router;
   const [session, setSession] = useState();
   const activeClasses =
     "text-sm md:text-md flex gap-1 md:gap-3 py-3 bg-socialBlue text-white md:-mx-8 md:px-8 px-6 rounded-md shadow-md shadow-gray-300";
   const nonActiveClasses =
     "text-sm md:text-md flex gap-1 md:gap-3 py-2 my-2 hover:bg-blue-200 -mx-4 px-6 md:px-5 md:-mx-5 rounded-md transition-all hover:scale-110";
   const supabase = createClient();
-  async function logout() {
-    flag(false);
-    await supabase.auth.signOut();
+  function logout() {
+    supabase.auth.signOut().then(() => window.location.reload());
   }
   useEffect(() => {
     supabase.auth
       .getSession()
-      .then((result) => setSession(result.data.session.user.id));
+      .then((result) => setSession(result.data?.session?.user?.id));
   }, []);
   return (
     <Card noPadding={true}>
@@ -48,7 +47,7 @@ export default function NavigationCard({ flag, profile }) {
           </svg>
           <span className="hidden md:block">Home</span>
         </Link>
-        <Link
+        {/* <Link
           href="/profile/friends"
           className={
             pathname === "/profile/friends" ? activeClasses : nonActiveClasses
@@ -69,7 +68,7 @@ export default function NavigationCard({ flag, profile }) {
             />
           </svg>
           <span className="hidden md:block">Friends</span>
-        </Link>
+        </Link> */}
         <Link
           href="/saved"
           className={pathname === "/saved" ? activeClasses : nonActiveClasses}
@@ -93,7 +92,9 @@ export default function NavigationCard({ flag, profile }) {
         <Link
           href={"/profile/" + session}
           className={
-            pathname.includes("profile") ? activeClasses : nonActiveClasses
+            pathname.includes(`profile/${session}`)
+              ? activeClasses
+              : nonActiveClasses
           }
         >
           <svg
@@ -113,25 +114,27 @@ export default function NavigationCard({ flag, profile }) {
 
           <span className="hidden md:block">Profile</span>
         </Link>
-        <button onClick={logout} className="w-full -my-2">
-          <span className={nonActiveClasses}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
-              />
-            </svg>
-            <span className="hidden md:block">Logout</span>
-          </span>
-        </button>
+        <Link href={"/"}>
+          <button onClick={logout} className="w-full -my-2">
+            <span className={nonActiveClasses}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+                />
+              </svg>
+              <span className="hidden md:block">Logout</span>
+            </span>
+          </button>
+        </Link>
       </div>
     </Card>
   );

@@ -4,7 +4,12 @@ import { createClient } from "@/utils/supabase/component";
 import PostCard from "./PostCard";
 import { useEffect, useState } from "react";
 
-export default function ProfileContent({ activeTab, userId, avatarStatus }) {
+export default function ProfileContent({
+  activeTab,
+  userId,
+  avatarStatus,
+  following,
+}) {
   const supabase = createClient();
   const [posts, setPosts] = useState([]);
   const [profile, setProfile] = useState([]);
@@ -26,6 +31,7 @@ export default function ProfileContent({ activeTab, userId, avatarStatus }) {
       .from("posts")
       .select()
       .is("parent", null)
+      .order("created_at", { ascending: false })
       .eq("author", userId);
     return data;
   }
@@ -106,29 +112,13 @@ export default function ProfileContent({ activeTab, userId, avatarStatus }) {
       )}
       {activeTab === "friends" && (
         <Card noPadding={true}>
-          <h2 className="text-3xl mb-2 p-4">Friends</h2>
+          <h2 className="text-3xl mb-2 p-4">Following</h2>
           <div className="grid grid-cols-2">
-            <div className="border-b border-gray-100 p-4">
-              <FriendInfo />
-            </div>
-            <div className="border-b border-gray-100 p-4">
-              <FriendInfo />
-            </div>
-            <div className="border-b border-gray-100 p-4">
-              <FriendInfo />
-            </div>
-            <div className="border-b border-gray-100 p-4">
-              <FriendInfo />
-            </div>
-            <div className="border-b border-gray-100 p-4">
-              <FriendInfo />
-            </div>
-            <div className="border-b border-gray-100 p-4">
-              <FriendInfo />
-            </div>
-            <div className="border-b border-gray-100 p-4">
-              <FriendInfo />
-            </div>
+            {following.map((prof) => (
+              <div key={prof.follow} className="border-b border-gray-100 p-4">
+                <FriendInfo profile={prof.profiles} />
+              </div>
+            ))}
           </div>
         </Card>
       )}

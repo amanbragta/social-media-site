@@ -10,10 +10,10 @@ export function UserContextProvider({ children }) {
     supabase.auth
       .getSession()
       .then((obj) => {
-        const session = obj.data.session.user.id;
+        const session = obj.data?.session?.user?.id;
         return supabase.from("profiles").select().eq("id", session);
       })
-      .then((result) => setProfile(result.data[0]));
+      .then((result) => setProfile(result.data?.[0]));
   }, []);
   return (
     <UserContext.Provider value={profile}>{children}</UserContext.Provider>

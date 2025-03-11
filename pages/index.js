@@ -9,7 +9,6 @@ import { UserContext } from "@/contexts/UserContext";
 export default function Home() {
   const supabase = createClient();
   const [flag, setFlag] = useState(false);
-  const [currSession, setCurrSession] = useState(null);
   const [posts, setPosts] = useState([]);
   const [profile, setProfile] = useState(null);
   useEffect(() => {
@@ -18,14 +17,13 @@ export default function Home() {
       .then((obj) => {
         if (obj.data.session) {
           setFlag(true);
-          setCurrSession(obj.data.session.user);
         }
         return supabase
           .from("profiles")
           .select()
           .eq("id", obj.data.session?.user?.id);
       })
-      .then((result) => setProfile(result.data[0]));
+      .then((result) => setProfile(result.data?.[0]));
     fetchPosts();
   }, []);
 
@@ -45,7 +43,12 @@ export default function Home() {
       <UserContext.Provider value={profile}>
         <PostFormCard onPost={fetchPosts} />
         {posts.map((post) => (
-          <PostCard key={post.id} {...post} profile={profile} />
+          <PostCard
+            key={post.id}
+            {...post}
+            profile={profile}
+            onPost={fetchPosts}
+          />
         ))}
       </UserContext.Provider>
     </Layout>

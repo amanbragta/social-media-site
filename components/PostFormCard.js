@@ -64,7 +64,7 @@ export default function PostFormCard({ onPost }) {
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="grow p-3 h-14 resize-none"
+            className="grow p-3 h-14 resize-none border border-gray-300 rounded-md"
             placeholder={`What's on your mind, ${profile?.name}?`}
           />
         )}
@@ -85,7 +85,7 @@ export default function PostFormCard({ onPost }) {
       )}
       <div className="flex gap-5 items-center mt-2">
         <div>
-          <label className="flex gap-1">
+          <label className="flex gap-1 cursor-pointer">
             <input
               type="file"
               className="hidden"
@@ -107,10 +107,10 @@ export default function PostFormCard({ onPost }) {
               />
             </svg>
 
-            <span className="hidden md:block">Photos</span>
+            <span className="hidden md:block">Upload photos</span>
           </label>
         </div>
-        <div>
+        {/* <div>
           <button className="flex gap-1">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -171,11 +171,11 @@ export default function PostFormCard({ onPost }) {
             </svg>
             <span className="hidden md:block">Mood</span>
           </button>
-        </div>
+        </div> */}
         <div className="grow text-right">
           <button
             onClick={createPosts}
-            className="bg-socialBlue px-6 py-1 text-white rounded-md"
+            className="bg-socialBlue px-6 py-1 text-white rounded-md cursor-pointer"
           >
             Share
           </button>
