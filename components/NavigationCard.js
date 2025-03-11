@@ -14,7 +14,9 @@ export default function NavigationCard({ flag, profile }) {
     "text-sm md:text-md flex gap-1 md:gap-3 py-2 my-2 hover:bg-blue-200 -mx-4 px-6 md:px-5 md:-mx-5 rounded-md transition-all hover:scale-110";
   const supabase = createClient();
   function logout() {
-    supabase.auth.signOut().then(() => window.location.reload());
+    supabase.auth.signOut().then((result) => {
+      return flag(false);
+    });
   }
   useEffect(() => {
     supabase.auth
@@ -92,7 +94,7 @@ export default function NavigationCard({ flag, profile }) {
         <Link
           href={"/profile/" + session}
           className={
-            pathname.includes(`profile/${session}`)
+            router.asPath.includes(`profile/${session}`)
               ? activeClasses
               : nonActiveClasses
           }
@@ -114,27 +116,26 @@ export default function NavigationCard({ flag, profile }) {
 
           <span className="hidden md:block">Profile</span>
         </Link>
-        <Link href={"/"}>
-          <button onClick={logout} className="w-full -my-2">
-            <span className={nonActiveClasses}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
-                />
-              </svg>
-              <span className="hidden md:block">Logout</span>
-            </span>
-          </button>
-        </Link>
+
+        <button onClick={logout} className="w-full -mt-2">
+          <span className={nonActiveClasses}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+              />
+            </svg>
+            <span className="hidden md:block">Logout</span>
+          </span>
+        </button>
       </div>
     </Card>
   );

@@ -127,7 +127,7 @@ export default function PostCard({
           .from("posts")
           .delete()
           .eq("id", id)
-          .then(() => onPost());
+          .then((result) => onPost());
       });
   }
 

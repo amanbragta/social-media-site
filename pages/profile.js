@@ -109,7 +109,6 @@ export default function ProfilePage() {
       })
       .eq("id", userId)
       .then((result) => {
-        console.log(result);
         setProfile({ ...profile, name, place });
         setIsEditMode(false);
       });
