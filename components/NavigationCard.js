@@ -3,6 +3,7 @@ import Card from "./Card";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/component";
 import { useEffect, useState } from "react";
+import LoginPage from "@/pages/login";
 
 export default function NavigationCard({ flag, profile }) {
   const router = useRouter();
@@ -14,9 +15,7 @@ export default function NavigationCard({ flag, profile }) {
     "text-sm md:text-md flex gap-1 md:gap-3 py-2 my-2 hover:bg-blue-200 -mx-4 px-6 md:px-5 md:-mx-5 rounded-md transition-all hover:scale-110";
   const supabase = createClient();
   function logout() {
-    supabase.auth.signOut().then((result) => {
-      return flag(false);
-    });
+    supabase.auth.signOut().then((result) => {});
   }
   useEffect(() => {
     supabase.auth
@@ -91,52 +90,105 @@ export default function NavigationCard({ flag, profile }) {
           </svg>
           <span className="hidden md:block">Saved posts</span>
         </Link>
-        <Link
-          href={"/profile/" + session}
-          className={
-            router.asPath.includes(`profile/${session}`)
-              ? activeClasses
-              : nonActiveClasses
-          }
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
+        {session ? (
+          <Link
+            href={"/profile/" + session}
+            className={
+              router.asPath.includes(`profile/${session}`)
+                ? activeClasses
+                : nonActiveClasses
+            }
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-            />
-          </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+              />
+            </svg>
 
-          <span className="hidden md:block">Profile</span>
-        </Link>
-
+            <span className="hidden md:block">Profile</span>
+          </Link>
+        ) : (
+          <div className={`mt-2 ${nonActiveClasses}`}>
+            <button
+              onClick={() => alert("Login to create a profile")}
+              className="cursor-pointer"
+            >
+              <span className="flex gap-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                  />
+                </svg>
+                <span className="hidden md:block">Profile</span>
+              </span>
+            </button>
+          </div>
+        )}
         <div className={`mt-2 ${nonActiveClasses}`}>
-          <button onClick={logout}>
-            <span className="flex gap-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
-                />
-              </svg>
-              <span className="hidden md:block">Logout</span>
-            </span>
-          </button>
+          {!session ? (
+            <Link href={"/login"}>
+              <span className="flex gap-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"
+                  />
+                </svg>
+
+                <span className="hidden md:block">Login</span>
+              </span>
+            </Link>
+          ) : (
+            <Link href={"/login"}>
+              <span className="flex gap-3">
+                <button onClick={logout}>
+                  <span className="flex gap-3 cursor-pointer">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+                      />
+                    </svg>
+                    <span className="hidden md:block">Logout</span>
+                  </span>
+                </button>
+              </span>
+            </Link>
+          )}
         </div>
       </div>
     </Card>

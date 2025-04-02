@@ -14,7 +14,7 @@ export default function PostFormCard({ onPost }) {
   const profile = useContext(UserContext);
   useEffect(() => {
     supabase.auth.getSession().then((obj) => {
-      setCurrSession(obj.data.session.user);
+      setCurrSession(obj.data?.session?.user);
     });
   }, []);
 
@@ -55,62 +55,64 @@ export default function PostFormCard({ onPost }) {
     }
   }
   return (
-    <Card>
-      <div className="flex gap-2">
-        <div>
-          <Avatar url={profile?.avatar} />
-        </div>
-        {profile && (
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="grow p-3 h-14 resize-none border border-gray-300 rounded-md"
-            placeholder={`What's on your mind, ${profile?.name}?`}
-          />
-        )}
-      </div>
-      {isUploading && (
-        <div>
-          <PreLoader />
-        </div>
-      )}
-      {uploads.length > 0 && (
-        <div className="flex gap-2">
-          {uploads.map((upload, index) => (
-            <div key={index} className="mt-2">
-              <img src={upload} alt="" className="h-24 w-auto rounded-md" />
+    <>
+      {currSession && (
+        <Card>
+          <div className="flex gap-2">
+            <div>
+              <Avatar url={profile?.avatar} />
             </div>
-          ))}
-        </div>
-      )}
-      <div className="flex gap-5 items-center mt-2">
-        <div>
-          <label className="flex gap-1 cursor-pointer">
-            <input
-              type="file"
-              className="hidden"
-              multiple
-              onChange={uploadPhotos}
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+            {profile && (
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="grow p-3 h-14 resize-none border border-gray-300 rounded-md"
+                placeholder={`What's on your mind, ${profile?.name}?`}
               />
-            </svg>
+            )}
+          </div>
+          {isUploading && (
+            <div>
+              <PreLoader />
+            </div>
+          )}
+          {uploads.length > 0 && (
+            <div className="flex gap-2">
+              {uploads.map((upload, index) => (
+                <div key={index} className="mt-2">
+                  <img src={upload} alt="" className="h-24 w-auto rounded-md" />
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-5 items-center mt-2">
+            <div>
+              <label className="flex gap-1 cursor-pointer">
+                <input
+                  type="file"
+                  className="hidden"
+                  multiple
+                  onChange={uploadPhotos}
+                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+                  />
+                </svg>
 
-            <span className="hidden md:block">Upload photos</span>
-          </label>
-        </div>
-        {/* <div>
+                <span className="hidden md:block">Upload photos</span>
+              </label>
+            </div>
+            {/* <div>
           <button className="flex gap-1">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -172,15 +174,17 @@ export default function PostFormCard({ onPost }) {
             <span className="hidden md:block">Mood</span>
           </button>
         </div> */}
-        <div className="grow text-right">
-          <button
-            onClick={createPosts}
-            className="bg-socialBlue px-6 py-1 text-white rounded-md cursor-pointer"
-          >
-            Share
-          </button>
-        </div>
-      </div>
-    </Card>
+            <div className="grow text-right">
+              <button
+                onClick={createPosts}
+                className="bg-socialBlue px-6 py-1 text-white rounded-md cursor-pointer"
+              >
+                Share
+              </button>
+            </div>
+          </div>
+        </Card>
+      )}
+    </>
   );
 }

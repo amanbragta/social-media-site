@@ -54,7 +54,11 @@ export default function Avatar({
     <div className="relative">
       <img
         className={`${dimentions} object-cover rounded-full overflow-hidden`}
-        src={url}
+        src={
+          url
+            ? url
+            : "https://i.pinimg.com/474x/07/c4/72/07c4720d19a9e9edad9d0e939eca304a.jpg"
+        }
         alt=""
       />
       {isUploading && (

@@ -14,6 +14,7 @@ export default function PostCard({
   gotRemoved,
   profile,
   onPost,
+  session,
 }) {
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const [commentText, setCommentText] = useState("");
@@ -59,6 +60,9 @@ export default function PostCard({
   const isLikedByMe = !!likes.find((like) => like.user_id === profile?.id);
 
   function toggleLike() {
+    if (!profile) {
+      return alert("Login to like a post.");
+    }
     if (isLikedByMe) {
       supabase
         .from("likes")
@@ -88,32 +92,34 @@ export default function PostCard({
   }
 
   function toggleSaved() {
+    if (!profile || !session) {
+      setDropDownOpen(false);
+      return alert("Login to save a post.");
+    }
     if (isSaved) {
-      supabase.auth.getSession().then((result) => {
-        const sessionId = result.data.session.user.id;
-        supabase
-          .from("saved_posts")
-          .delete()
-          .eq("post_id", id)
-          .eq("user_id", sessionId)
-          .then(() => {
-            setDropDownOpen(false);
-            setIsSaved(false);
-            gotRemoved(true);
-          });
-      });
+      supabase
+        .from("saved_posts")
+        .delete()
+        .eq("post_id", id)
+        .eq("user_id", session)
+        .then(() => {
+          setDropDownOpen(false);
+          setIsSaved(false);
+          gotRemoved(true);
+        });
     }
     if (!isSaved) {
       supabase
         .from("saved_posts")
         .insert({
           post_id: id,
-          user_id: profile.id,
+          user_id: session,
         })
         .then(() => {
           setDropDownOpen(false);
           setIsSaved(true);
-        });
+        })
+        .catch((err) => console.log(err));
     }
   }
 
@@ -133,6 +139,10 @@ export default function PostCard({
 
   function postComment(e) {
     e.preventDefault();
+    if (!profile) {
+      setCommentText("");
+      return alert("Login to post comments.");
+    }
     supabase
       .from("posts")
       .insert({
@@ -229,7 +239,7 @@ export default function PostCard({
                   </span>
                 </button>
 
-                {profile?.id == authorProfile.id && (
+                {authorProfile.id === session && (
                   <button className="w-full -my-2" onClick={deletePost}>
                     <span className={classesForMenu}>
                       <svg

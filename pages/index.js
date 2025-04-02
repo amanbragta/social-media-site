@@ -11,12 +11,15 @@ export default function Home() {
   const [flag, setFlag] = useState(false);
   const [posts, setPosts] = useState([]);
   const [profile, setProfile] = useState(null);
+  const [gotRemoved, setGotRemoved] = useState(false);
+  const [session, setSession] = useState();
   useEffect(() => {
     supabase.auth
       .getSession()
       .then((obj) => {
         if (obj.data.session) {
           setFlag(true);
+          setSession(obj.data.session.user.id);
         }
         return supabase
           .from("profiles")
@@ -36,7 +39,7 @@ export default function Home() {
       .then((result) => setPosts(result.data));
   }
 
-  if (!flag) return <LoginPage flag={setFlag} />;
+  // if (!flag) return <LoginPage flag={setFlag} />;
 
   return (
     <Layout flag={setFlag} profile={profile}>
@@ -48,6 +51,8 @@ export default function Home() {
             {...post}
             profile={profile}
             onPost={fetchPosts}
+            gotRemoved={setGotRemoved}
+            session={session}
           />
         ))}
       </UserContext.Provider>

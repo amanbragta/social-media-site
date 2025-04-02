@@ -7,15 +7,17 @@ export default function SavedPosts() {
   const supabase = createClient();
   const [saved, setSaved] = useState([]);
   const [gotRemoved, setGotRemoved] = useState(false);
+  const [session, setSession] = useState();
   useEffect(() => {
     supabase.auth.getSession().then((result) => {
-      const session = result.data.session.user.id;
+      const session = result.data?.session?.user?.id;
+      setSession(session);
       supabase
         .from("saved_posts")
         .select("post_id")
         .eq("user_id", session)
         .then((result) => {
-          const postId = result.data.map((res) => res.post_id);
+          const postId = result.data?.map((res) => res.post_id);
           supabase
             .from("posts")
             .select("*,profiles(*)")
@@ -27,12 +29,23 @@ export default function SavedPosts() {
   return (
     <Layout>
       <h1 className="text-6xl text-gray-300 mb-4">Saved posts</h1>
-      {saved?.length > 0 &&
-        saved.map((save) => (
-          <div key={save.id}>
-            <PostCard {...save} gotRemoved={setGotRemoved} />
-          </div>
-        ))}
+      {!session ? (
+        <p>Login to save posts</p>
+      ) : (
+        <>
+          {saved?.length > 0 &&
+            saved.map((save) => (
+              <div key={save.id}>
+                <PostCard
+                  {...save}
+                  gotRemoved={setGotRemoved}
+                  profile={session}
+                  session={session}
+                />
+              </div>
+            ))}
+        </>
+      )}
     </Layout>
   );
 }

@@ -9,17 +9,24 @@ export default function ProfileContent({
   userId,
   avatarStatus,
   following,
+  isMyUser,
 }) {
   const supabase = createClient();
   const [posts, setPosts] = useState([]);
   const [profile, setProfile] = useState([]);
   const [about, setAbout] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
+  const [session, setSession] = useState();
+  const [gotRemoved, setGotRemoved] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
+    supabase.auth
+      .getSession()
+      .then((result) => setSession(result.data?.session?.user?.id));
     loadPosts().then(() => {});
   }, [userId, avatarStatus]);
+
   async function loadPosts() {
     const posts = await fetchPosts(userId);
     const profile = await fetchProfile(userId);
@@ -63,6 +70,8 @@ export default function ProfileContent({
               {...post}
               profiles={profile}
               profile={profile}
+              session={session}
+              gotRemoved={setGotRemoved}
             />
           ))}
         </div>
@@ -73,7 +82,7 @@ export default function ProfileContent({
             <div className="flex justify-between">
               <h2 className="text-3xl mb-2">About me</h2>
               <div>
-                {!isEditMode && (
+                {isMyUser && !isEditMode && (
                   <button
                     onClick={() => setIsEditMode(true)}
                     className="bg-white shadow-sm shadow-gray-500 rounded-md px-3 py-1 cursor-pointer"
@@ -83,7 +92,7 @@ export default function ProfileContent({
                 )}
               </div>
             </div>
-            {isEditMode && (
+            {isMyUser && isEditMode && (
               <div>
                 <textarea
                   value={about}
